@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+svg {
+    background-color: rgb(200, 216, 242);
+}
+
+.country {
+    fill: #eee;
+}
+
+.country.UKR {
+    /*fill: #cdc;*/ /* Na zielonej Ukrainie */
+    fill: #fff;
+}
+
+.country-boundary {
+    fill: none;
+    stroke: #aaa;
+}
+
+.region {
+    fill: none;
+}
+
+.region-boundary {
+    fill: none;
+    stroke: #777;
+    stroke-dasharray: 2,2;
+    stroke-linejoin: round;
+}
+
+.region-label {
+    fill: #000000;
+    fill-opacity: 1;
+    font-size: 15px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    text-anchor: middle;
+}
+.text {
+    fill: #000000;
+    fill-opacity: 1;
+    font-size: 15px;
+    font-family: 'Roboto Condensed';
+    font-weight: 300;
+    text-anchor: middle;
+}
+
+.coastline, .river, .lake {
+    stroke: rgb(83, 168, 231);
+}
+
+.coastline, .river {
+    fill: none;
+}
+
+.lake {
+    fill: rgb(191, 216, 242);
+}
+
+
+</style>
+<body>
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
+
+<script>
+
+ 
+var width = 900,
+    height = 600;
+var geometry_center =  {"latitude": 48.360833, "longitude": 31.1809725};
+
+const myScale = ['#D3D3D2',
+ '#e8dfee',
+ '#e6dded',
+ '#e5dbec',
+ '#e4daeb',
+ '#e3d7ea',
+ '#e2d5e9',
+ '#e1d3e8',
+ '#e0d1e7',
+ '#dfcfe5',
+ '#decce4',
+ '#dccae3',
+ '#dbc8e2',
+ '#dac5e0',
+ '#d9c3df',
+ '#d8c0de',
+ '#d7bedd',
+ '#d6bcdb',
+ '#d5b9da',
+ '#d4b7d9',
+ '#d3b4d8',
+ '#d3b2d6',
+ '#d2b0d5',
+ '#d1add4',
+ '#d0abd3',
+ '#d0a8d2',
+ '#cfa6d0',
+ '#cfa4cf',
+ '#cea1ce',
+ '#ce9fcd',
+ '#ce9ccb',
+ '#ce9aca',
+ '#ce97c9',
+ '#ce94c7',
+ '#cf92c6',
+ '#cf8fc5',
+ '#d08cc3',
+ '#d08ac2',
+ '#d187c1',
+ '#d284bf',
+ '#d381be',
+ '#d47ebc',
+ '#d57bbb',
+ '#d678b9',
+ '#d775b8',
+ '#d872b6',
+ '#d96fb4',
+ '#da6cb3',
+ '#db69b1',
+ '#dc65af',
+ '#dd62ad',
+ '#de5fab',
+ '#df5ba9',
+ '#df58a7',
+ '#e054a5',
+ '#e151a3',
+ '#e14da0',
+ '#e24a9e',
+ '#e2479c',
+ '#e24399',
+ '#e34097',
+ '#e33d94',
+ '#e33a92',
+ '#e2378f',
+ '#e2348c',
+ '#e2318a',
+ '#e12e87',
+ '#e12c84',
+ '#e02a81',
+ '#df277e',
+ '#de257b',
+ '#dd2378',
+ '#dc2175',
+ '#da2072',
+ '#d91e6f',
+ '#d71c6d',
+ '#d51b6a',
+ '#d31967',
+ '#d11864',
+ '#cf1662',
+ '#cd155f',
+ '#cb145d',
+ '#c8125b',
+ '#c61159',
+ '#c31057',
+ '#c00f55',
+ '#bd0d53',
+ '#ba0c51',
+ '#b70b4f',
+ '#b40a4e',
+ '#b1094c',
+ '#ae084b',
+ '#ab0749',
+ '#a80648',
+ '#a40546',
+ '#a10544',
+ '#9e0443',
+ '#9b0341',
+ '#97033f',
+ '#94023e']
+
+
+
+var svg = d3.select("body").append("center").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+let data_1 = new Map()
+let data_2 = new Map()
+
+
+d3.csv("nato.csv", function(d)
+    {for(var i = 0; i < d.length; i++)
+    {{data_1.set(d[i].city, +d[i].proportion_f_2010)}
+}})
+
+
+d3.csv("nato.csv", function(d)
+    {for(var i = 0; i < d.length; i++)
+    {{data_2.set(d[i].city, +d[i].proportion_f_2021)}
+}})
+
+
+d3.json("ukraine.json", function(error, ukraine_data) {
+    var projection = d3.geo.conicEqualArea()
+        .center([0, geometry_center.latitude])
+        .rotate([-geometry_center.longitude, 0])
+        .parallels([46, 52])  // vsapsai: selected these parallels myself, most likely they are wrong.
+        .scale(4000)
+        .translate([width / 2, height / 2]);
+    var path = d3.geo.path()
+        .projection(projection);
+
+
+
+    var countries = topojson.feature(ukraine_data, ukraine_data.objects.countries);
+    svg.selectAll(".country")
+        .data(countries.features)
+      .enter().append("path")
+        .attr("class", function(d) { return "country " + d.id; })
+        .attr("d", path);
+
+
+    svg.append("path")
+        .datum(topojson.mesh(ukraine_data, ukraine_data.objects.countries, function(a, b) { return a !== b; }))
+        .attr("class", "country-boundary")
+        .attr("d", path);
+    svg.append("path")
+        .datum(topojson.mesh(ukraine_data, ukraine_data.objects.countries, function(a, b) { return a === b; }))
+        .attr("class", "coastline")
+        .attr("d", path);
+
+    var water_group = svg.append("g")
+        .attr("id", "water-resources");
+
+    var rivers = topojson.feature(ukraine_data, ukraine_data.objects.rivers);
+    water_group.selectAll(".river")
+        .data(rivers.features)
+      .enter().append("path")
+        .attr("class", "river")
+        .attr("name", function(d) { return d.properties.name; })
+        .attr("d", path);
+
+    // Add lakes after rivers so that river lines connect reservoirs, not cross them.
+    var lakes = topojson.feature(ukraine_data, ukraine_data.objects.lakes);
+    water_group.selectAll(".lake")
+        .data(lakes.features)
+      .enter().append("path")
+        .attr("class", "lake")  // Note: not necessary a lake, it can be a reservoir.
+        .attr("name", function(d) { return d.properties.name; })
+        .attr("d", path);
+
+    var regions = topojson.feature(ukraine_data, ukraine_data.objects.regions);
+    
+         
+    // -- areas
+    svg.selectAll(".region")
+        .data(regions.features)
+      .enter().append("path")
+        .classed("region", true)
+        .attr("id", function(d) { return d.id; })
+        .attr("d", path)
+        .style("fill", function (d) {
+ 
+        d.total = data_1.get(d.id);
+
+
+        return myScale[d3.round(d.total)]})
+
+        .transition()
+        .delay(5000)
+        .duration(100)
+        .style("fill", function (d) {
+        d.total = data_2.get(d.id);
+        
+        return myScale[d3.round(d.total)]})
+    var text_Nato = svg.append("text")
+		.attr("x", 200)
+        .attr("y", 28)
+        .attr("text-anchor", "middle")
+        .style("font-size", "25px")
+        .style("font-family", 'Arial')
+
+        .text("NATO SUPPORT IN UKRAINE IN")
+
+    var text = svg.append("text")
+       .attr("x", 395)
+       .attr("y", 28)
+       .attr("text-anchor", "left")
+       .style("font-size", "25px")
+       .style("font-family", 'Arial')
+
+       .style("fill", myScale[25])
+       .text('2010');
+    update();
+
+function update() {
+    text.transition()
+        .delay(5000)
+        .duration(100)
+        .attr("x", 395)
+        .attr("y", 28)
+        .attr("text-anchor", "left")
+        .style("font-size", "25px")
+        .style("font-family", 'Arial')
+        .style("fill", myScale[99])
+        .text('2021');
+
+     
+
+  
+}
+var data_color = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99]
+
+svg.selectAll(".firstrow").data(data_color).enter().append("circle").attr("cx", function(d,i){return 20 + i*20}).attr("cy", 500).attr("r", 20).attr("fill", function(d){console.log(myScale[d]); return myScale[d]}).transition()
+        .duration(5000).delay(2000)
+
+
+var text_color = svg.append("text")
+       .attr("x", 125)
+       .attr("y", 475)
+       .attr("text-anchor", "middle")
+       .style("font-size", "15px")
+       .style("font-family", 'Arial')
+       .style("fill", 'grey')
+       .text("0  10  20  30  40  50  60  70  80  90  100");
+
+var text_perc = svg.append("text")
+       .attr("x", 125)
+       .attr("y", 450)
+       .attr("text-anchor", "middle")
+       .style("font-size", "17px")
+       .style("font-family", 'Arial')
+       .style("fill", 'grey')
+       .text("% supporting Nato membership");
+
+/*
+    svg.selectAll(".region-label")
+        .data(regions.features)
+        .attr("id", function(d) { return d.id; })
+        .attr("d", path)
+        .enter().append("text")
+        .attr("transform", function(d) { return "translate(" + projection(d.properties.label_point) + ")"; })
+        .classed("region-label", true)
+        .selectAll("tspan")
+            .data(function(d) {d.total = data_2.get(d.id).toString(); console.log(d.total); return [d.total]})
+
+            .enter().append("tspan")
+            .attr("x", "0")
+            .attr("dy", function(d, i) { return i > 0 ? "1.1em" : "0"; })
+
+            .text(function(d) { console.log(d); return d; })
+
+            .transition()
+            .duration(5000)
+
+            .data(function(d) {d.total = data_1.get(d.id).toString(); console.log(d.total); return [d.total]})
+            .text(function(d) { console.log(d); return d; });
+      
+      
+
+ */ 
+   
+ });
+
+
+d3.select(self.frameElement)
+    .style("width", width + "px")
+    .style("height", height + "px");
+
+</script>
