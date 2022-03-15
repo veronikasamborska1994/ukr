@@ -17,15 +17,10 @@ The next step will be to create visualisations of the words that are most common
 
 ![](media/nato2021.png) ![](media/nato2010.png) ![](media/nato.png)
 
-These visualisations are based on sociological [data] (https://razumkov.org.ua/uploads/article/2021-nato-ukr.pdf) assessing the public opinion of Ukrainians regarding our country’s NATO membership over time. In 2002, only a third of the country supported Ukraine's membership in NATO, and a third opposed it. By 2014, the share of NATO supporters in Ukraine halved, and the share of opponents had doubled. Since 2014, in response to the Russian invasion of Crimea and Eastern Ukraine, there has been a dramatic increase in citizens' approval of Ukrainian membership in NATO.
+These visualisations are based on sociological [data](https://razumkov.org.ua/uploads/article/2021-nato-ukr.pdf) assessing the public opinion of Ukrainians regarding our country’s NATO membership over time. In 2002, only a third of the country supported Ukraine's membership in NATO, and a third opposed it. By 2014, the share of NATO supporters in Ukraine halved, and the share of opponents had doubled. Since 2014, in response to the Russian invasion of Crimea and Eastern Ukraine, there has been a dramatic increase in citizens' approval of Ukrainian membership in NATO.
 
 There have always been regional differences in NATO membership approval, with western regions generally expressing stronger support. Even in 2021, NATO membership support was not supported by a majority in the Southern (33%) and Eastern (43%) regions of Ukraine. As the Russian military continues to primarily bombard the cities in Southern and Eastern areas (e.g., Mariupol and Kharkiv are some of the worst affected), it will be informative to see how NATO attitudes will change in these regions.
 
-
-## Visualisation
-
-
-## Installation
 
 
 
