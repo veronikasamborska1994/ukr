@@ -1,7 +1,7 @@
 # GNI Fellowship (Financial Times) – Russian State Media Word Use and NATO sentiment in Ukraine
 
 
-> This repository contains the code for the [visualisation] of the most frequent words used in articles on the main Russian state media website and NATO attitudes in Ukraine over time
+> This repository contains the code for the visualisation of the most frequent words used in articles on the main Russian state media website and NATO attitudes in Ukraine over time
 
 ## Summary
 ![](media/13.png) ![](media/14.png) ![](media/15.png)

@@ -12,7 +12,6 @@ Created on Fri Feb 11 14:50:55 2022
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 import pandas as pd
 from palettable import wesanderson as wes
 

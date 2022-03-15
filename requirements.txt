@@ -1,0 +1,11 @@
+requests
+bs4
+operator
+collections
+googletrans
+numpy
+wordcloud
+matplotlib
+random
+pandas
+palettable
